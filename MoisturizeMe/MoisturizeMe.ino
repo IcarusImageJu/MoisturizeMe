@@ -1,19 +1,19 @@
-// the setup routine runs once when you press reset:
+const byte cable = 7;
+const byte boardLed = LED_BUILTIN;
+byte lastState = LOW;
+
 void setup() {
-  // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-  // initialize the LED pin as an output
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(cable, INPUT_PULLUP);
+  pinMode(boardLed, OUTPUT);
 }
 
-// the loop routine runs over and over again forever:
 void loop() {
-  // read the input on analog pin 0:
-  int sensorValue = analogRead(A0);
-  if(sensorValue > 700) {
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  };
+  byte currenState = !digitalRead(cable);
+  if(currenState != lastState) {
+    lastState = currenState;
+    Serial.println(currenState == LOW ? "Not connected" : "Connected");
+    digitalWrite(boardLed, currenState == LOW ? LOW : HIGH);
+  }
   delay(1);
 }
