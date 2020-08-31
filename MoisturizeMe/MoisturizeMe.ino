@@ -13,7 +13,12 @@ void loop() {
   if(currenState != lastState) {
     lastState = currenState;
     Serial.println(currenState == LOW ? "Not connected" : "Connected");
-    digitalWrite(boardLed, currenState == LOW ? LOW : HIGH);
   }
-  delay(1);
+  // Need to fix the async call time if possible
+  // this should be running in parallel
+  if(currenState == LOW) {
+    blink(2000);
+  } else {
+    blink(500);
+  }
 }
