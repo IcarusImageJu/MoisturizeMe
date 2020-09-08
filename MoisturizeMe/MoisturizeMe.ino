@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <SoftwareSerial.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -16,12 +15,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 short int const MOISTURE_SENSOR = 0;
 // Entre the digital chan number for the valve relay
 short int const VALVE_OUTPUT = 7;
-// Nodemcu communication
-SoftwareSerial nodemcu(0,1); // RX, TX
+// Serial communication
 String data;
 
 // Moisturize Me Config
-String const VERSION_NAME = "v0.2.0";
+String const VERSION_NAME = "v0.2.1";
 
 // Moisutre Config
 // Register a float var for the sensor value to be stored
@@ -35,7 +33,6 @@ short int const minMoistRatio = 40;
 
 void setup() {
   Serial.begin(115200);
-  nodemcu.begin(115200);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
     Serial.println(F("SSD1306 allocation failed"));
@@ -116,8 +113,9 @@ void logMoisture() {
   }
   // Display our values
   display.display();
+  // convert data to String
   cdata = calcMoistureRatio();
-  nodemcu.println(cdata);
+  // Print it for nodemcu reading
   Serial.println(cdata);
 }
 
