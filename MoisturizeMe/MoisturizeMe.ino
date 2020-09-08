@@ -21,7 +21,7 @@ SoftwareSerial nodemcu(0,1); // RX, TX
 String data;
 
 // Moisturize Me Config
-String const VERSION_NAME = "v0.1.1";
+String const VERSION_NAME = "v0.2.0";
 
 // Moisutre Config
 // Register a float var for the sensor value to be stored
