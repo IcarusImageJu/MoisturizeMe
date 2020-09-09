@@ -16,10 +16,10 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // IO Config
 // Number of sensors/valves
 #define CONTROLS 3
-
-MoistureSensor moistureSensor0(0, 282, 591);
-MoistureSensor moistureSensor1(1, 288, 590);
-MoistureSensor moistureSensor2(2, 291, 592);
+// MoistureSensor pin, waterValue, airValue, minMoistRatio
+MoistureSensor moistureSensor0(0, 282, 591, 40);
+MoistureSensor moistureSensor1(1, 288, 590, 40);
+MoistureSensor moistureSensor2(2, 291, 592, 40);
 MoistureSensor const MOISTURE_SENSORS [CONTROLS] = {moistureSensor0, moistureSensor1, moistureSensor2};
 // Enter the digital chan number for the valve relay
 Valve valve0(7);
@@ -28,8 +28,6 @@ Valve valve2(7);
 Valve const VALVES [CONTROLS] = {valve0, valve1, valve2};
 // Enter the digital chan number for the light relay
 #define LIGHT_OUTPUT 4
-// Register an int var for the minimum accepted value in % before watering the plant
-#define minMoistRatio 40
 
 void setup() {
   // Serial on the same port of nodemcu
@@ -66,7 +64,7 @@ void loop() {
 void moisturizing(int i) {
   // Read the sensor value and set it to the var
   float soilMoistureValue = calcMoistureRatio(i);
-  bool watering = soilMoistureValue < minMoistRatio;
+  bool watering = soilMoistureValue < MOISTURE_SENSORS[i].minMoistRatio;
   // Check the moisture ratio against our min var
   if(watering) {
     // Close the gate, to water the plant
