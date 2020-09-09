@@ -1,13 +1,15 @@
 class Valve {
     const int pin;
-    enum State {
-        OPEN = 0,
-        CLOSED = 1
-    } state;
+    
     public:
         Valve(int pin):
             pin(pin)
             {}
+
+        enum State {
+            OPEN = 0,
+            CLOSED = 1
+        } state;
 
         void setup() {
             pinMode(pin, OUTPUT);

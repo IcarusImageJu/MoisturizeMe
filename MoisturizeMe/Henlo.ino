@@ -1,5 +1,5 @@
 // Moisturize Me Config
-String const VERSION_NAME = "v0.3.0";
+String const VERSION_NAME = "v0.3.1";
 
 void henlo(void) {
   // Clear the screen from previous values
