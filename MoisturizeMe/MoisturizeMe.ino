@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "MoistureSensor.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -11,134 +12,120 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // IO Config
-// Enter the Analog Chan number for the moisture sensor
-short int const MOISTURE_SENSOR = 0;
-// Entre the digital chan number for the valve relay
-short int const VALVE_OUTPUT = 7;
-// Serial communication
-String data;
+// Number of sensors/valves
+#define CONTROLS 3
 
-// Moisturize Me Config
-String const VERSION_NAME = "v0.2.1";
-
-// Moisutre Config
-// Register a float var for the sensor value to be stored
-float soilMoistureValue;
-// Register an int var for the value of the sensor when completly dry and is in ambiant air
-short int const airValue = 581;
-// Register an int var for the value of the sensor when dipped in water
-short int const waterValue = 312;
+MoistureSensor moistureSensor0(0, 282, 591);
+MoistureSensor moistureSensor1(1, 288, 590);
+MoistureSensor moistureSensor2(2, 291, 592);
+MoistureSensor const MOISTURE_SENSORS [CONTROLS] = {moistureSensor0, moistureSensor1, moistureSensor2};
+// Enter the digital chan number for the valve relay
+#define VALVE_OUTPUT_1 7
+#define VALVE_OUTPUT_2 6
+#define VALVE_OUTPUT_3 5
+short int const VALVE_OUTPUTS [CONTROLS] = {VALVE_OUTPUT_1, VALVE_OUTPUT_2, VALVE_OUTPUT_3};
+// Enter the digital chan number for the light relay
+#define LIGHT_OUTPUT 4
 // Register an int var for the minimum accepted value in % before watering the plant
-short int const minMoistRatio = 40;
+#define minMoistRatio 40
 
 void setup() {
+  // Serial on the same port of nodemcu
   Serial.begin(115200);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
-  // Set the pin for the valve in OUTPUT mode
-  pinMode(VALVE_OUTPUT, OUTPUT);
-  // Be sure to keep the vavle closed during the initialization phase
-  digitalWrite(VALVE_OUTPUT, HIGH);
+  
+  for (int i = 0; i <= CONTROLS - 1; i++)
+  {
+    // Set the pin for the valve in OUTPUT mode
+    pinMode(VALVE_OUTPUTS[i], OUTPUT);
+    // Be sure to keep the valve closed during the initialization phase
+    digitalWrite(VALVE_OUTPUTS[i], HIGH);
+  }
+  
+  // Set the pin for the light in OUTPUT mode
+  pinMode(LIGHT_OUTPUT, OUTPUT);
+  // and keep it not lit durint init
+  digitalWrite(LIGHT_OUTPUT, HIGH);
   // Print our Logo
-//  henlo();
+  // henlo();
 }
 
 void loop() {
-  moisturizing();
+  for (int i = 0; i <= CONTROLS - 1; i++)
+  {
+    moisturizing(i);
+  }
+  
+  delay(1000);
 }
 
-void moisturizing() {
+void moisturizing(int index) {
   // Read the sensor value and set it to the var
-  soilMoistureValue = analogRead(MOISTURE_SENSOR);
+  float soilMoistureValue = calcMoistureRatio(index);
+  bool watering = soilMoistureValue < minMoistRatio;
   // Check the moisture ratio against our min var
-  if(calcMoistureRatio() < minMoistRatio) {
+  if(watering) {
     // Close the gate, to water the plant
-    digitalWrite(VALVE_OUTPUT, LOW);
-    // Clear the screen from previous values
-    display.clearDisplay();
-    // Set the biggest size accepted by the screen
-    display.setTextSize(2);
-    // Set the color to white
-    display.setTextColor(SSD1306_WHITE);
-    // Set our cursor to the starting point
-    display.setCursor(0,0);
-    // Set our message
-    display.println(F("Watering"));
-    // Display our message
-    display.display();
+    digitalWrite(VALVE_OUTPUTS[index], LOW);
   } else {
     // Open the gate to stop watering the plant
-    digitalWrite(VALVE_OUTPUT, HIGH);
-    // Print the log to our OLED screen
-    logMoisture();
+    digitalWrite(VALVE_OUTPUTS[index], HIGH);
   }
-  delay(1000);
+  logMoisture(index, soilMoistureValue, watering);
 }
 
 // Calc the moisture ratio, return the ratio
 // 0 is air
 // 100 is water
-float calcMoistureRatio() {
-  float ratio = ((soilMoistureValue - waterValue) / (airValue - waterValue)) * 100;
-  float invertedRatio = 100 - ratio;
-  return invertedRatio;
+float calcMoistureRatio(int i) {
+  MoistureSensor sensor = MOISTURE_SENSORS[i];
+  float current = analogRead(sensor.pin);
+  return 100 - (((current - sensor.waterValue) / (sensor.airValue - sensor.waterValue)) * 100);
 }
 
-String cdata;
+
 // Print stuff on the OLED Screen that concern moisture status
-void logMoisture() {
-  // Clear the screen from previous values
-  display.clearDisplay();
-  // Set the biggest size accepted by the screen
-  display.setTextSize(4);
-  // Set the text color to white
+void logMoisture(int index, float soilMoistureValue, bool watering) {
+  if(index == 0) {
+    display.clearDisplay();
+  }
+  display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  // Check our ratio if its air like
-  if(calcMoistureRatio() < 1) {
-    display.setCursor(0,0);
-    display.print(F("Air"));
-    // Check our ratio if its water like
-  } else if (calcMoistureRatio() > 95) {
-    display.setCursor(0,0);
-    display.print(F("Water"));
-    // Print our humidity %
+  display.setCursor(0, ((SCREEN_HEIGHT / 4) * index ) + ((SCREEN_HEIGHT / 4 / (CONTROLS - 1)) * index));
+  display.print(index);
+  display.print(" > ");
+  if(watering) {
+    display.print(F("Watering"));
   } else {
-    display.setCursor(0,0);
-    display.print(F("H%"));
-    display.setCursor(60,0);
-    display.print(calcMoistureRatio());
+    if(soilMoistureValue < 1) {
+      display.print(F("Air"));
+      // Check our ratio if its water like
+    } else if (soilMoistureValue > 95) {
+      display.print(F("Water"));
+      // Print our humidity %
+    } else {
+      
+      display.print(F("H% "));
+      display.print(soilMoistureValue);
+    }
   }
   // Display our values
-  display.display();
   // convert data to String
-  cdata = calcMoistureRatio();
+  String cdata = "V";
+  cdata += index;
+  cdata += ":";
+  cdata += soilMoistureValue;
+  cdata += ",W";
+  cdata += index;
+  cdata += ":";
+  cdata += watering;
   // Print it for nodemcu reading
   Serial.println(cdata);
-}
-
-void henlo(void) {
-  // Clear the screen from previous values
-  display.clearDisplay();
-  // Set a text size
-  display.setTextSize(2);
-  // Set the text color to white
-  display.setTextColor(SSD1306_WHITE);
-  // Set our cursor to the starting point
-  display.setCursor(0,0);
-  // Print on 1st line
-  display.print(F("Moisturize"));
-  // Print on 2nd line
-  display.print(F("Me"));
-  // Print version
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-  display.setCursor(60, (SCREEN_HEIGHT / 2) + 6);
-  display.print(VERSION_NAME);
-  // Display our values
-  display.display();
-  // Go for the programm after this delay in MS
-  delay(5000);
+  if(index == (CONTROLS - 1)) {
+    display.display();
+  }
 }
