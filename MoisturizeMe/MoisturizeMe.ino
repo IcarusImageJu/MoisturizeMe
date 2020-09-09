@@ -1,8 +1,10 @@
+#include "MoistureSensor.h"
+#include "Valve.h"
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "MoistureSensor.h"
+
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -20,10 +22,10 @@ MoistureSensor moistureSensor1(1, 288, 590);
 MoistureSensor moistureSensor2(2, 291, 592);
 MoistureSensor const MOISTURE_SENSORS [CONTROLS] = {moistureSensor0, moistureSensor1, moistureSensor2};
 // Enter the digital chan number for the valve relay
-#define VALVE_OUTPUT_1 7
-#define VALVE_OUTPUT_2 6
-#define VALVE_OUTPUT_3 5
-short int const VALVE_OUTPUTS [CONTROLS] = {VALVE_OUTPUT_1, VALVE_OUTPUT_2, VALVE_OUTPUT_3};
+Valve valve0(7);
+Valve valve1(7);
+Valve valve2(7);
+Valve const VALVES [CONTROLS] = {valve0, valve1, valve2};
 // Enter the digital chan number for the light relay
 #define LIGHT_OUTPUT 4
 // Register an int var for the minimum accepted value in % before watering the plant
@@ -40,10 +42,7 @@ void setup() {
   
   for (int i = 0; i <= CONTROLS - 1; i++)
   {
-    // Set the pin for the valve in OUTPUT mode
-    pinMode(VALVE_OUTPUTS[i], OUTPUT);
-    // Be sure to keep the valve closed during the initialization phase
-    digitalWrite(VALVE_OUTPUTS[i], HIGH);
+    VALVES[i].setup();
   }
   
   // Set the pin for the light in OUTPUT mode
@@ -58,24 +57,22 @@ void loop() {
   for (int i = 0; i <= CONTROLS - 1; i++)
   {
     moisturizing(i);
+    VALVES[i].loop();
   }
   
   delay(1000);
 }
 
-void moisturizing(int index) {
+void moisturizing(int i) {
   // Read the sensor value and set it to the var
-  float soilMoistureValue = calcMoistureRatio(index);
+  float soilMoistureValue = calcMoistureRatio(i);
   bool watering = soilMoistureValue < minMoistRatio;
   // Check the moisture ratio against our min var
   if(watering) {
     // Close the gate, to water the plant
-    digitalWrite(VALVE_OUTPUTS[index], LOW);
-  } else {
-    // Open the gate to stop watering the plant
-    digitalWrite(VALVE_OUTPUTS[index], HIGH);
+    VALVES[i].watering();
   }
-  logMoisture(index, soilMoistureValue, watering);
+  logMoisture(i, soilMoistureValue, watering);
 }
 
 // Calc the moisture ratio, return the ratio
