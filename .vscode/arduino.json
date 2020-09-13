@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
-    "port": "/dev/tty.usbmodem142301",
+    "port": "/dev/tty.usbmodem141301",
     "sketch": "MoisturizeMe/MoisturizeMe.ino"
 }

@@ -1,15 +1,11 @@
+#ifndef MOISTURE_VALVE_H
+#define MOISUTRE_VALVE_H
+
 class Valve {
-    const int pin;
-    
     public:
         Valve(int pin):
             pin(pin)
             {}
-
-        enum State {
-            OPEN = 0,
-            CLOSED = 1
-        } state;
 
         void setup() {
             pinMode(pin, OUTPUT);
@@ -33,4 +29,14 @@ class Valve {
         void watering() {
             state = OPEN;
         }
+
+    private:
+        int pin;
+        
+        enum State {
+            OPEN = 0,
+            CLOSED = 1
+        } state;
 };
+
+#endif
