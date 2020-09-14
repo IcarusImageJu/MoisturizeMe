@@ -3,8 +3,9 @@
 
 class Valve {
     public:
-        Valve(int pin):
-            pin(pin)
+        Valve(int pin, unsigned long valveTimer):
+            pin(pin),
+            valveTimer(valveTimer)
             {}
 
         void setup() {
@@ -20,19 +21,36 @@ class Valve {
                     break;
                 case OPEN:
                     digitalWrite(pin, LOW);
-                    delay(2000);
-                    state = CLOSED;
-                    break;
+                    if (checkTimer <= millis()) {
+                      state = CLOSED;
+                      checkTimer = millis() + allowCheckTimer;
+                      break;
+                    }
             }
         }
 
         void watering() {
-            state = OPEN;
+            if(isAllowed == ALLOWED) {
+              state = OPEN;
+              isAllowed = NOT_ALLOWED;
+              checkTimer = millis() + valveTimer;
+            } else if(checkTimer + valveTimer <= millis()) {
+              isAllowed = ALLOWED;
+            }
         }
 
     private:
         int pin;
-        
+        unsigned long valveTimer = 2000;
+        unsigned long checkTimer;
+//        Allow to water the plant every hour
+        unsigned long allowCheckTimer = 1 * 60 * 60 * 1000;
+
+        enum IsAllowed {
+            ALLOWED = 0,
+            NOT_ALLOWED = 1,
+        } isAllowed = ALLOWED;
+
         enum State {
             OPEN = 0,
             CLOSED = 1

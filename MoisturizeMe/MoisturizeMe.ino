@@ -45,19 +45,6 @@ void loop() {
   moisturizer2.loop();
 }
 
-// void moisturizing(int i) {
-//   // Read the sensor value and set it to the var
-//   float soilMoistureValue = calcMoistureRatio(i);
-//   bool watering = soilMoistureValue < MOISTURE_SENSORS[i].minMoistRatio;
-//   // Check the moisture ratio against our min var
-//   if(watering) {
-//     // Close the gate, to water the plant
-//     VALVES[i].watering();
-//   }
-//   logMoisture(i, soilMoistureValue, watering);
-// }
-
-
 // Print stuff on the OLED Screen that concern moisture status
 // void logMoisture(int index, float soilMoistureValue, bool watering) {
 //   if(index == 0) {
