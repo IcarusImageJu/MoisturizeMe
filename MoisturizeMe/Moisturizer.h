@@ -2,27 +2,45 @@
 #define MOISTURIZER_H
 
 #include "MoistureSensor.h";
-#include "Valve.h";
+#include "MoistureValve.h";
 
 class Moisturizer {
-    Valve valve;
+    MoistureValve moistureValve;
     MoistureSensor moistureSensor;
     public:
         Moisturizer(int sensorPin, int waterValue, int airValue, int minMoistRatio, int valvePin, unsigned long valveTimer):
-            valve(valvePin, valveTimer),
+            moistureValve(valvePin, valveTimer),
             moistureSensor(sensorPin, waterValue, airValue, minMoistRatio)
         {}
 
         void setup() {
-            valve.setup();
+            moistureValve.setup();
         }
 
         void loop() {
-            valve.loop();
+            moistureValve.loop();
             if(moistureSensor.askWatering()) {
-                valve.watering();
+                moistureValve.watering();
             }
         }
+
+        String humidity() {
+          return String(moistureSensor.getValue());
+        }
+
+        bool askWatering() {
+          return moistureSensor.askWatering();
+        }
+
+        String print() {
+          data = "";
+          data += moistureSensor.print();
+          data += ",";
+          data += moistureValve.print();
+          return data;
+        }
+    private:
+      String data;
 };
 
 #endif
