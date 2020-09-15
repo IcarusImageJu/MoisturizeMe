@@ -57,7 +57,7 @@ class MoistureValve {
         String data;
         unsigned long valveTimer = 2000;
         unsigned long checkTimer;
-//        Allow to water the plant every hour
+//      Allow to water the plant every hour
         unsigned long allowCheckTimer = 1 * 60 * 60 * 1000;
 
 
