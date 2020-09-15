@@ -10,7 +10,7 @@
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
-#define VERSION_NAME "v0.5.0"
+#define VERSION_NAME "v0.5.1"
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -96,6 +96,8 @@ class MoistureScreen {
             display.print(F("Moisturize"));
             // Print on 2nd line
             display.print(F("Me"));
+            // Print droplet after
+            display.drawBitmap(25, (SCREEN_HEIGHT / 2), humidity2_icon16x16, 16, 16, 1 );
             // Print version
             display.setTextSize(1);
             display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
