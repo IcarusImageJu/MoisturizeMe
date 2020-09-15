@@ -1,20 +1,26 @@
+#define VERSION_NAME "v0.6.0"
+
 #include "Moisturizer.h"
 #include "MoistureScreen.h"
+#include "MoistureCom.h"
 
 // IO Config
 // Enter the digital chan number for the light relay
-#define LIGHT_OUTPUT 4
+const int LIGHT_OUTPUT = 4;
 
 Moisturizer moisturizer0(0, 282, 591, 40, 7, 2000);
 Moisturizer moisturizer1(1, 288, 590, 40, 6, 2000);
 Moisturizer moisturizer2(2, 291, 592, 40, 5, 2000);
+
 int const size = 3;
 Moisturizer moisturizers[size] = {moisturizer0, moisturizer1, moisturizer2};
+
 MoistureScreen moistureScreen(size, moisturizers);
+MoistureCom moistureCom(size, moisturizers);
 
 void setup() {
-  // Serial on the same port of nodemcu
-  Serial.begin(115200);
+  // Setup our com
+  moistureCom.setup();
   // Setup our Screen
   moistureScreen.setup();
   // Setup our moisturizers
@@ -32,4 +38,5 @@ void loop() {
   moisturizer1.loop();
   moisturizer2.loop();
   moistureScreen.loop();
+  moistureCom.loop();
 }

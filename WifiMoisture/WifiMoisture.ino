@@ -8,13 +8,14 @@
 // char pass[] = "XXX"; //Enter your WIFI password
 // char auth[] = "XXX"; //Enter your Blynk auth code
 
-BLYNK_READ(V0)
-{
-  // This command writes Arduino's uptime in seconds to Virtual Pin (5)
-  String value = Serial.readString();
-  Serial.println(value);
-  Blynk.virtualWrite(V0, Serial.readString());
-}
+//BLYNK_READ(V0)
+//{
+//  
+//  // This command writes Arduino's uptime in seconds to Virtual Pin (5)
+//  String value = Serial.readString();
+//  Serial.println(value);
+//  Blynk.virtualWrite(V0, Serial.readString());
+//}
 
 
 void setup()
@@ -25,10 +26,12 @@ void setup()
   ; // wait for serial port to connect. Needed for native USB port only
   }
   pinMode(16, OUTPUT);
-  Blynk.begin(auth, ssid, pass);
+//  Blynk.begin(auth, ssid, pass);
 }
 
 void loop()
 {
-  Blynk.run();
+//  Blynk.run();
+  Serial.println(F("U"));
+  delay(2000);
 }

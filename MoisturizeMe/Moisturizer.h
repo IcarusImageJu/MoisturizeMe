@@ -19,7 +19,7 @@ class Moisturizer {
 
         void loop() {
             moistureValve.loop();
-            if(moistureSensor.askWatering()) {
+            if((bool)moistureSensor.askWatering()) {
                 moistureValve.watering();
             }
         }
@@ -30,6 +30,10 @@ class Moisturizer {
 
         bool askWatering() {
           return moistureSensor.askWatering();
+        }
+
+        bool isWatering() {
+          return moistureValve.isWatering();
         }
 
         String print() {

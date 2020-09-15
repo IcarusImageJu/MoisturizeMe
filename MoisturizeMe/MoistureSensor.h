@@ -24,11 +24,6 @@ class MoistureSensor {
 
 		bool askWatering() {
 			bool ask = getValue() < minMoistRatio;
-			if(ask) {
-				state = UNDER;
-			} else {
-				state = ABOVE;
-			}
 			return ask;
 		}
 
@@ -40,7 +35,7 @@ class MoistureSensor {
 			data += ",W";
 			data += pin;
 			data += ":";
-			data += state;
+			data += (bool)(getValue() < minMoistRatio);
 			return data;
 		}
 
@@ -51,11 +46,6 @@ class MoistureSensor {
 
 	private:
 		String data;
-
-		enum State {
-			ABOVE = 0,
-			UNDER = 1,
-		} state;
 		
 };
 

@@ -1,4 +1,3 @@
-
 #ifndef MOISTURIZE_SCREEN_H
 #define MOISTURIZE_SCREEN_H
 
@@ -10,7 +9,6 @@
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
-#define VERSION_NAME "v0.5.1"
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -55,7 +53,7 @@ class MoistureScreen {
 
         void loop() {
           if(henloTimer <= millis()){
-            for (int index = 0; index <= size; index++) {
+            for (int index = 0; index < size; index++) {
               Moisturizer currentMoisturizer = moisturizers[index];
               if(index == 0) {
                  display.clearDisplay();
@@ -68,8 +66,10 @@ class MoistureScreen {
               display.print(F("H% "));
               display.print(currentMoisturizer.humidity());
               if(currentMoisturizer.askWatering()) {
-//                 display.print(F(" ~~~"));
-                 display.drawBitmap(100, ((SCREEN_HEIGHT / 4) * index), humidity2_icon16x16, 16, 16, 1 );
+                display.print(F(" ~"));
+              }
+              if(currentMoisturizer.isWatering()) {
+                display.drawBitmap(100, ((SCREEN_HEIGHT / 4) * index), humidity2_icon16x16, 16, 16, 1 );
               }
               // Display our values
               if(index == (size - 1)) {

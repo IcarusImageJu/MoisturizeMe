@@ -23,10 +23,7 @@ class MoistureValve {
                     digitalWrite(pin, LOW);
                     if ((unsigned long)(checkTimer <= millis())) {
                       state = CLOSED;
-                      Serial.println(F("here"));
                       checkTimer = millis() + allowCheckTimer;
-                      Serial.println(checkTimer);
-                      Serial.println(allowCheckTimer);
                     }
                     break;
             }
@@ -38,34 +35,33 @@ class MoistureValve {
               isAllowed = NOT_ALLOWED;
               checkTimer = millis() + valveTimer;
             } else if((unsigned long)(checkTimer + valveTimer <= millis())) {
-              Serial.println(F("check this"));
-              Serial.println(checkTimer);
-              Serial.println(millis());
               isAllowed = ALLOWED;
             }
+        }
+
+        bool isWatering() {
+          return !digitalRead(pin);
         }
 
         String print() {
           data = "V";
           data += pin;
           data += ":";
-          data += state;
+          data += !digitalRead(pin);
           return data;
         }
 
+    private:
         enum State {
             OPEN = 0,
             CLOSED = 1
         } state;
-
-    private:
         int pin;
         String data;
         unsigned long valveTimer = 2000;
         unsigned long checkTimer;
 //      Allow to water the plant every hour (1 * 60 * 60 * 1000) = 3.600.000
         unsigned long allowCheckTimer = 3600000;
-
 
         enum IsAllowed {
             ALLOWED = 0,
