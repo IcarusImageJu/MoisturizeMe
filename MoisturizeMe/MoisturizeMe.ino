@@ -1,4 +1,4 @@
-#define VERSION_NAME "v0.6.0"
+#define VERSION_NAME "v0.7.0"
 
 #include "Moisturizer.h"
 #include "MoistureScreen.h"
