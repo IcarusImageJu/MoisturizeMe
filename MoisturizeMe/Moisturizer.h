@@ -36,6 +36,10 @@ class Moisturizer {
           return moistureValve.isWatering();
         }
 
+        void waterItNow() {
+          return moistureValve.waterItNow();
+        }
+
         String print() {
           data = "";
           data += moistureSensor.print();

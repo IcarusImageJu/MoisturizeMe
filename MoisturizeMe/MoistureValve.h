@@ -39,6 +39,13 @@ class MoistureValve {
             }
         }
 
+        void waterItNow() {
+          digitalWrite(pin, LOW);
+          state = OPEN;
+          isAllowed = NOT_ALLOWED;
+          checkTimer = millis() + valveTimer;
+        }
+
         bool isWatering() {
           return !digitalRead(pin);
         }

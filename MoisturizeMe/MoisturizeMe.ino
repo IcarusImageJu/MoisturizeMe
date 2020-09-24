@@ -1,4 +1,4 @@
-#define VERSION_NAME "v0.7.0"
+#define VERSION_NAME "v0.7.1"
 
 #include "Moisturizer.h"
 #include "MoistureScreen.h"
@@ -7,6 +7,8 @@
 // IO Config
 // Enter the digital chan number for the light relay
 const int LIGHT_OUTPUT = 4;
+
+const int CLICK = 8;
 
 Moisturizer moisturizer0(0, 282, 591, 40, 7, 2000);
 Moisturizer moisturizer1(1, 288, 590, 40, 6, 2000);
@@ -17,6 +19,8 @@ Moisturizer moisturizers[size] = {moisturizer0, moisturizer1, moisturizer2};
 
 MoistureScreen moistureScreen(size, moisturizers);
 MoistureCom moistureCom(size, moisturizers);
+
+int currentState;
 
 void setup() {
   // Setup our com
@@ -31,6 +35,8 @@ void setup() {
   pinMode(LIGHT_OUTPUT, OUTPUT);
   // and keep it not lit durint init
   digitalWrite(LIGHT_OUTPUT, HIGH);
+  // clickiti clickiti
+  pinMode(CLICK, INPUT_PULLUP);
 }
 
 void loop() {
@@ -39,4 +45,8 @@ void loop() {
   moisturizer2.loop();
   moistureScreen.loop();
   moistureCom.loop();
+  currentState = digitalRead(CLICK);
+  if(currentState == LOW) {
+    moisturizer0.waterItNow();
+  }
 }
