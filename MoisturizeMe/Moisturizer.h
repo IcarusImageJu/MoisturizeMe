@@ -1,54 +1,42 @@
 #ifndef MOISTURIZER_H
 #define MOISTURIZER_H
 
+#include <ArduinoJson.h>
+StaticJsonDocument<200> doc;
+
 #include "MoistureSensor.h";
 #include "MoistureValve.h";
 
 class Moisturizer {
-    MoistureValve moistureValve;
-    MoistureSensor moistureSensor;
     public:
-        Moisturizer(int sensorPin, int waterValue, int airValue, int minMoistRatio, int valvePin, unsigned long valveTimer):
-            moistureValve(valvePin, valveTimer),
-            moistureSensor(sensorPin, waterValue, airValue, minMoistRatio)
-        {}
+        Moisturizer() {
+        }
 
         void setup() {
-            moistureValve.setup();
+          
         }
 
         void loop() {
-            moistureValve.loop();
-            if((bool)moistureSensor.askWatering()) {
-                moistureValve.watering();
-            }
+
         }
 
-        String humidity() {
-          return String(moistureSensor.getValue());
+        void config(String content) {
+          pinMode(LED_BUILTIN, OUTPUT);
+          delay(500);
+          digitalWrite(LED_BUILTIN, HIGH);
+          delay(500);
+          digitalWrite(LED_BUILTIN, LOW);
+//          ESP.restart();
         }
 
-        bool askWatering() {
-          return moistureSensor.askWatering();
+        JsonArray print() {
+//          char buffer[256];
+//          size_t n = serializeJson(doc, buffer);
+//          debugA("hey - pub %d", buffer);
+//          client.publish(MQTT_VALUES_PUB, buffer, n);
+//          doc["raw"] = raw();
+//          doc["value"] = humidity();
         }
-
-        bool isWatering() {
-          return moistureValve.isWatering();
-        }
-
-        void waterItNow() {
-          return moistureValve.waterItNow();
-        }
-
-        String print() {
-          data = "";
-          data += moistureSensor.print();
-          data += ",";
-          data += moistureValve.print();
-          return data;
-        }
-    private:
-      String data;
 };
 
 #endif

@@ -27,22 +27,12 @@ class MoistureSensor {
 			return ask;
 		}
 
-		String print() {
-			data = "S";
-			data += pin;
-			data += ":";
-			data += getValue();
-			data += ",W";
-			data += pin;
-			data += ":";
-			data += (bool)(getValue() < minMoistRatio);
-			return data;
-		}
+    float currentValue() {
+      return analogRead(pin);
+    }
 
 	protected:
-		float currentValue() {
-			return analogRead(pin);
-		}
+		
 
 	private:
 		String data;
