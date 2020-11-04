@@ -4,9 +4,6 @@
 #include <ArduinoJson.h>
 #include "MoistureSensor.h";
 #include "MoistureValve.h";
-#include "RemoteDebug.h"
-RemoteDebug Debug;
-#include "EEPROM.h"
 
 class Moisturizer {
     public:

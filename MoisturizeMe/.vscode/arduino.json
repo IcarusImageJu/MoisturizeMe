@@ -1,4 +1,6 @@
 {
     "board": "esp32:esp32:nodemcu-32s",
-    "configuration": "FlashFreq=80,UploadSpeed=921600"
+    "configuration": "FlashFreq=80,UploadSpeed=921600",
+    "port": "192.168.2.39",
+    "sketch": "MoisturizeMe.ino"
 }

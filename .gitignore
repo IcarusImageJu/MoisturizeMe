@@ -1,2 +1,4 @@
 
 .DS_Store
+MoisturizeMe/general/WifiCredentials.h
+MoisturizeMe/general/MqttCredentials.h
