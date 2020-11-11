@@ -36,6 +36,9 @@
 // EEPROM
 #include "EEPROM.h"
 
+// JSON support
+#include <ArduinoJson.h>
+
 //#define DEBUG_DISABLED true
 //#define DEBUG_DISABLE_AUTO_FUNC true
 //#define WEBSOCKET_DISABLED true

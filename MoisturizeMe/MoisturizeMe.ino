@@ -1,4 +1,5 @@
 #define HOST_NAME "MoisturizeMe0"
+byte changed = 0;
 // General
 #include "general/General.h"
 // Moisturizer
@@ -13,6 +14,12 @@ void setup() {
   setupGeneral();
   // Moisturizers
   moisturizer.setup();
+  // Config called
+  if (changed == 1) {
+    // Reset changed to 0
+    changed = 0;
+    moisturizer.config();
+  }
 }
 
 void loop() {

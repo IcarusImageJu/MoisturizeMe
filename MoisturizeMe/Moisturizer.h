@@ -1,7 +1,6 @@
 #ifndef MOISTURIZER_H
 #define MOISTURIZER_H
 
-#include <ArduinoJson.h>
 #include "MoistureSensor.h";
 #include "MoistureValve.h";
 
@@ -32,7 +31,7 @@ class Moisturizer {
           }
         }
 
-        void config(String content) {
+        void config() {
           pinMode(LED_BUILTIN, OUTPUT);
           digitalWrite(LED_BUILTIN, HIGH);
           delay(500);

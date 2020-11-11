@@ -3,7 +3,7 @@
 // const char* mqtt_server = "192.168.1.1";
 // #define mqtt_port 1883
 #define MQTT_CONTROLLERS_STATES_PUB "MoisturizeMe/controllers/states/0"
-#define MQTT_CONTROLLERS_CONFIGS_SUB "MoisturizeMe/controllers/configs/0"
+#define MQTT_CONTROLLERS_CONFIGS_SUB "MoisturizeMe/controllers/configs/0/#"
 #define MQTT_VALUES_PUB "MoisturizeMe/values/0"
 PubSubClient client(wifiClient);
 
@@ -31,6 +31,7 @@ void mqttReconnect() {
 
 void mqttCallback(char* topic, byte *payload, unsigned int length) {
     payload[length] = '\0';
+    String convertedTopic = String(topic);
     String content = String((char*)payload);
   
     debugI("-------new message from broker-----");
@@ -38,11 +39,34 @@ void mqttCallback(char* topic, byte *payload, unsigned int length) {
     debugI("payload: %d", payload);
     debugI("content: %s", content.c_str());
     debugI("length: %d", length);
-    // moisturizer.config(content);
+    // callback for controller Id
+    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/id") == 0) {
+      debugI("Match id");
+    }
+    // callback for controller wifiSSid
+    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/wifiSSid") == 0) {
+      debugI("Match ssid");
+    }
+    // callback for controller wifiPass
+    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/wifiPass") == 0) {
+      debugI("Match pass");
+    }
+    // callback for controller mqttServer
+    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/mqttServer") == 0) {
+      debugI("Match mqtt");
+    }
+    // callback for controller name
+    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/name") == 0) {
+      debugI("Match name");
+    }
+    // callback moisturizers
+    if(strstr(convertedTopic.c_str(),"moisturizers/")) {
+      debugI("Match moisturizers config");
+    }
 }
 
 void setupMqtt() {
-    client.setServer(mqtt_server, mqtt_port);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(mqttCallback);
   mqttReconnect();
 }
