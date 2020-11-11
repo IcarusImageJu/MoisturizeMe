@@ -47,6 +47,7 @@ void loopGeneral() {
   preLoopDebug();
   loopOta();
   loopMqtt();
+  loopPersistence();
   loopDebug();
   // Give a time for ESP
   yield();

@@ -29,6 +29,21 @@ void mqttReconnect() {
   }
 }
 
+char* tokenTopic(char* topic) {
+  // this function will return the last token of a mqtt topic
+  char* tmp;
+  tmp = strtok (topic,"/");
+  char* token = tmp;
+  int length = 0;
+  while (tmp != NULL)
+  {
+    length += 1;
+    token = tmp;
+    tmp = strtok (NULL, "/");
+  }
+  return token;
+}
+
 void mqttCallback(char* topic, byte *payload, unsigned int length) {
     payload[length] = '\0';
     String convertedTopic = String(topic);
@@ -39,29 +54,17 @@ void mqttCallback(char* topic, byte *payload, unsigned int length) {
     debugI("payload: %d", payload);
     debugI("content: %s", content.c_str());
     debugI("length: %d", length);
-    // callback for controller Id
-    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/id") == 0) {
-      debugI("Match id");
-    }
-    // callback for controller wifiSSid
-    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/wifiSSid") == 0) {
-      debugI("Match ssid");
-    }
-    // callback for controller wifiPass
-    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/wifiPass") == 0) {
-      debugI("Match pass");
-    }
-    // callback for controller mqttServer
-    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/mqttServer") == 0) {
-      debugI("Match mqtt");
-    }
-    // callback for controller name
-    if(strcmp(topic, "MoisturizeMe/controllers/configs/0/controller/name") == 0) {
-      debugI("Match name");
+    
+
+    // callback controller
+    if(strstr(convertedTopic.c_str(),"controller/")) {
+      debugI("Match moisturizers config");
+      configController(tokenTopic(topic), content);
     }
     // callback moisturizers
     if(strstr(convertedTopic.c_str(),"moisturizers/")) {
       debugI("Match moisturizers config");
+      configMoisturizer(tokenTopic(topic), content);
     }
 }
 
